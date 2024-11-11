@@ -142,31 +142,10 @@ function solve() {
   MathJax.typesetPromise([solutionAns]);
 }
 function fixDoubleExponent(expression) {
-  // Tìm các biểu thức có dạng e^{...}^...
-  console.log(expression);
-  
-  var check1 = /{e}\^(.*?)\\cdot/g;
-  var check2 = /{e}\^(.*?)/g;
-  var check3 = /{e}\^(.*?)}\\/g;
-
-  if (check1.test(expression)) {
-    expression = expression.replace(check1, (match, p1) => `e^{${p1}} \\cdot`);
-  }
-
-  if (check2.test(expression)) {
-    expression = expression.replace(check2, (match, p1) => `e^{${p1}}`);
-  }
-
-  if (check3.test(expression)) {
-    expression = expression.replace(check3, (match, p1) => `e^{${p1}} \\`);
-  }
-
-  console.log(expression);
-
-
-  return expression;
+  return expression.replace(/{e}\^{([^}]+)}\^([^\{]+)/g, (match, base, exponent) => {
+    return `e^{${base}^${exponent}}`;
+  });
 }
-
 
 </script>
 </html>
