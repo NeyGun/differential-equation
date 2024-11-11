@@ -99,18 +99,17 @@ function solve() {
   qText = qInput.value;
   
   var pInte = nerdamer(`integrate(${pText}, x)`).text();
-  var eExpP = nerdamer(`simplify(exp(${pInte}))`).text(); // Thêm dấu ngoặc nhọn quanh pInte
+  var eExpP = nerdamer(`simplify(exp(${pInte}))`).text();
   var rightStep2 = nerdamer(`simplify(${qText}*exp(${pInte}))`).text();
   var rightStep2Inte = nerdamer(`integrate(${rightStep2}, x)`).text();
   var partOfStep5 = nerdamer(`simplify(${rightStep2Inte}/(exp(${pInte})))`).text();
   var partCOfStep5 = nerdamer(`simplify(exp(-${pInte}))`).text();
 
   
-  var pTextLa = nerdamer.convertToLaTeX(pInte);
+  var pTextLa = nerdamer.convertToLaTeX(pText);
   var qTextLa = nerdamer.convertToLaTeX(qText);
   var pInteLa = nerdamer.convertToLaTeX(pInte);
   var rightStep2La = fixDoubleExponent(nerdamer.convertToLaTeX(rightStep2));
-  
   var rightStep2InteLa = fixDoubleExponent(nerdamer.convertToLaTeX(rightStep2Inte));
   var partOfStep5La = fixDoubleExponent(nerdamer.convertToLaTeX(partOfStep5));
   var partCOfStep5La = nerdamer.convertToLaTeX(partCOfStep5);
@@ -118,21 +117,21 @@ function solve() {
   step_1.innerHTML += "Lấy: ";
   step_1.innerHTML += `\\( e^{\\int P(x)dx} \\ = \\ \\)`;
   
-  step_1.innerHTML += `\\( e^{${pInte}} \\)`;
-  step_1.innerHTML += `\\( \\ = \\ e^{${pInte}} \\)`;
+  step_1.innerHTML += `\\( e^{\\int ${pTextLa} dx} \\)`;
+  step_1.innerHTML += `\\( \\ = \\ e^{${pInteLa}} \\)`;
   
   step_2.innerHTML += "Nhân cả 2 vế cho ";
   step_2.innerHTML += "\\( e^{\\int P(x)dx}: \\ \\)";
-  step_2.innerHTML += `\\( y' . e^{${pInte}} \\ + (${pTextLa} . e^{${pInte}}) . y \\ = \\ ${qTextLa}.e^{${pInte}} \\)`; 
+  step_2.innerHTML += `\\( y' . e^{${pInteLa}} \\ + (${pTextLa} . e^{${pInteLa}}) . y \\ = \\ ${qTextLa}.e^{${pInteLa}} \\)`; 
   
   step_3.innerHTML += "Hay: ";
   step_3.innerHTML += `\\( \\frac{d}{dx} \\)`;
-  step_3.innerHTML += `\\( \\ (y.e^{${pInte}}) \\ = \\ \\)`;
+  step_3.innerHTML += `\\( \\ (y.e^{${pInteLa}}) \\ = \\ \\)`;
   step_3.innerHTML += `\\( ${rightStep2La} \\)`;
   
   
   step_4.innerHTML += "Lấy tích phân 2 vế ta được: ";
-  step_4.innerHTML += `\\( y.e^{${pInte}} \\ = ${rightStep2 == "0" ? "" : `\\int ${rightStep2La} dx + C \\ = `} \\)`;
+  step_4.innerHTML += `\\( y.e^{${pInteLa}} \\ = ${rightStep2 == "0" ? "" : `\\int ${rightStep2La} dx + C \\ = `} \\)`;
   step_4.innerHTML += `\\( \\ ${rightStep2 == "0" ? "" : `${rightStep2InteLa} +`} C \\)`;
 
   step_5.innerHTML += "Vậy nghiệm tổng quát của phương trình là: ";
@@ -146,6 +145,7 @@ function fixDoubleExponent(expression) {
     return `e^{${base}^${exponent}}`;
   });
 }
+
 
 </script>
 </html>
