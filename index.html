@@ -13,17 +13,22 @@
     <div class="solution">
       <div class="solution__header">PHƯƠNG TRÌNH VI PHÂN TUYẾN TÍNH CẤP 1</div>
       <div class="solution__ques">
+        <div class="solution__y-diff-box">
+          <input class="solution__y-diff-input" placeholder="1">
+        </div>
+        <p>\( \times \)</p>
         <p>\( y'\:+ \)</p>
         <div class="solution__p-box">
-          <input class="solution__p-input" placeholder="P(x)" onfocus="inputSelected(this)">
+          <input class="solution__p-input" placeholder="P(x)">
         </div>
         <p>\( \times y\: = \)</p>
         <div class="solution__q-box">
-          <input class="solution__q-input" placeholder="Q(x)" onfocus="inputSelected(this)"></input>
+          <input class="solution__q-input" placeholder="Q(x)">
         </div>
         <button class="run" onclick="solve()">Giải</button>
       </div>
       <div class="solution__ans">
+        <div class="step-0"></div>
         <div class="step-1"></div>
         <div class="step-2"></div>
         <div class="step-3"></div> 
@@ -70,34 +75,43 @@
 </style>
 <script>
 
+var rightStep2La
+var rightStep2InteLa
+var partOfStep5La
+var partCOfStep5La
+
+var yDiffInput = document.querySelector(".solution__y-diff-input")
 var pInput = document.querySelector(".solution__p-input");
 var qInput = document.querySelector(".solution__q-input");
 var solutionAns = document.querySelector(".solution__ans");
+var step_0 = document.querySelector(".step-0");
 var step_1 = document.querySelector(".step-1");
 var step_2 = document.querySelector(".step-2");
 var step_3 = document.querySelector(".step-3");
 var step_4 = document.querySelector(".step-4");
 var step_5 = document.querySelector(".step-5");
 
-function inputSelected(input) {
-  if (qInput.getAttribute("class") == "solution__q-input"
-    && pInput.getAttribute("class") == "solution__p-input") {
-    input.classList.toggle("selected");
-  }else {
-    pInput.classList.toggle("selected");
-    qInput.classList.toggle("selected");
-  }
-};
-
-function solve() {
+function solve(check = false) {
+  step_0.innerHTML = "";
   step_1.innerHTML = "";
   step_2.innerHTML = "";
   step_3.innerHTML = "";
   step_4.innerHTML = "";
   step_5.innerHTML = "";
+  yDiffText = yDiffInput.value;
   pText = pInput.value;
   qText = qInput.value;
-  
+
+  if (yDiffText) {
+    pText = nerdamer(`simplify(${pText}/${yDiffText})`).text()
+    qText = nerdamer(`simplify(${qText}/${yDiffText})`).text()
+    console.log(pText);
+    console.log(nerdamer.convertToLaTeX(pText));
+    step_0.innerHTML +=  "Rút gọn hệ số y': ";
+    step_0.innerHTML += `\\( y' \\ + \\ ${nerdamer.convertToLaTeX(pText)} \\cdot y \\ = \\ ${nerdamer.convertToLaTeX(qText)} \\)`;
+  }
+  var pTextLa = nerdamer.convertToLaTeX(pText);
+  var qTextLa = nerdamer.convertToLaTeX(qText);
   var pInte = nerdamer(`integrate(${pText}, x)`).text();
   var eExpP = nerdamer(`simplify(exp(${pInte}))`).text();
   var rightStep2 = nerdamer(`simplify(${qText}*exp(${pInte}))`).text();
@@ -105,15 +119,18 @@ function solve() {
   var partOfStep5 = nerdamer(`simplify(${rightStep2Inte}/(exp(${pInte})))`).text();
   var partCOfStep5 = nerdamer(`simplify(exp(-${pInte}))`).text();
 
-  
-  var pTextLa = nerdamer.convertToLaTeX(pText);
-  var qTextLa = nerdamer.convertToLaTeX(qText);
   var pInteLa = nerdamer.convertToLaTeX(pInte);
-  var rightStep2La = fixDoubleExponent(nerdamer.convertToLaTeX(rightStep2));
-  var rightStep2InteLa = fixDoubleExponent(nerdamer.convertToLaTeX(rightStep2Inte));
-  var partOfStep5La = fixDoubleExponent(nerdamer.convertToLaTeX(partOfStep5));
-  var partCOfStep5La = nerdamer.convertToLaTeX(partCOfStep5);
-
+  if (!check) {
+    rightStep2La = nerdamer.convertToLaTeX(rightStep2);
+    rightStep2InteLa = nerdamer.convertToLaTeX(rightStep2Inte);
+    partOfStep5La = nerdamer.convertToLaTeX(partOfStep5);
+    partCOfStep5La = nerdamer.convertToLaTeX(partCOfStep5);
+  }else {
+    rightStep2La = fixDoubleExponent(rightStep2La);
+    rightStep2InteLa = fixDoubleExponent(rightStep2InteLa);
+    partOfStep5La = fixDoubleExponent(partOfStep5La);
+    partCOfStep5La = fixDoubleExponent(partCOfStep5La);
+  };
   step_1.innerHTML += "Lấy: ";
   step_1.innerHTML += `\\( e^{\\int P(x)dx} \\ = \\ \\)`;
   
@@ -139,13 +156,17 @@ function solve() {
   step_5.innerHTML += `\\( ${partCOfStep5La} \\)`;
   
   MathJax.typesetPromise([solutionAns]);
+  if (solutionAns.innerHTML.includes("Double exponent: use braces to clarify") && !check) {
+    check  = true;
+    solve(check)
+  }
 }
 function fixDoubleExponent(expression) {
-  return expression.replace(/{e}\^{([^}]+)}\^([^\{]+)/g, (match, base, exponent) => {
-    return `e^{${base}^${exponent}}`;
-  });
+  const test = /{e}\^{([^}]+}\s*\^[^\{][0-9]+)/g;
+  
+  expression = expression.replaceAll(test, (match, p1) => `e^{{${p1}}`);
+  
+  return expression;
 }
-
-
 </script>
 </html>
