@@ -103,8 +103,8 @@ function solve(check = false) {
   qText = qInput.value;
 
   if (yDiffText) {
-    pText = nerdamer(`simplify(${pText}/${yDiffText})`).text()
-    qText = nerdamer(`simplify(${qText}/${yDiffText})`).text()
+    pText = nerdamer(`simplify(${pText}/(${yDiffText}))`).text()
+    qText = nerdamer(`simplify(${qText}/(${yDiffText}))`).text()
     console.log(pText);
     console.log(nerdamer.convertToLaTeX(pText));
     step_0.innerHTML +=  "Rút gọn hệ số y': ";
