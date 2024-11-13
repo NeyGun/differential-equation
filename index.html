@@ -14,16 +14,16 @@
       <div class="solution__header">PHƯƠNG TRÌNH VI PHÂN TUYẾN TÍNH CẤP 1</div>
       <div class="solution__ques">
         <div class="solution__y-diff-box">
-          <input class="solution__y-diff-input" value="5" placeholder="1">
+          <input class="solution__y-diff-input" placeholder="1">
         </div>
         <p>\( \times \)</p>
         <p>\( y'\:+ \)</p>
         <div class="solution__p-box">
-          <input class="solution__p-input" value="x" placeholder="P(x)">
+          <input class="solution__p-input" placeholder="P(x)">
         </div>
         <p>\( \times y\: = \)</p>
         <div class="solution__q-box">
-          <input class="solution__q-input" value="2" placeholder="Q(x)">
+          <input class="solution__q-input" placeholder="Q(x)">
         </div>
         <button class="run" onclick="solve()">Giải</button>
       </div>
@@ -106,21 +106,18 @@ function solve(check = false) {
     pText = nerdamer(`simplify(${pText}/(${yDiffText}))`).text()
     qText = nerdamer(`simplify(${qText}/(${yDiffText}))`).text()
     step_0.innerHTML +=  "Rút gọn hệ số y': ";
-    step_0.innerHTML += "\\( y' \\ + \\ \\)";
-    step_0.innerHTML += `$$ ${nerdamer.convertToLaTeX(pText)} $$`;
+    step_0.innerHTML += `\\(y' \\ + \\ ${nerdamer.convertToLaTeX(pText)} \\)`;
     step_0.innerHTML +=  `\\( \\cdot y \\ = \\ ${nerdamer.convertToLaTeX(qText)} \\)`;
   }
   var pTextLa = nerdamer.convertToLaTeX(pText);
   var qTextLa = nerdamer.convertToLaTeX(qText);
   var pInte = nerdamer(`integrate(${pText}, x)`).text();
   var eExpP = nerdamer(`simplify(exp(${pInte}))`).text();
-  console.log(eExpP)
   var rightStep2 = nerdamer(`simplify(${qText}*${eExpP})`).text();
-  console.log(rightStep2)
   var rightStep2Inte = nerdamer(`integrate(${rightStep2}, x)`).text();
   if (rightStep2Inte.includes("erf")) {
-    rightStep2Inte = `\int ${rightStep2}`;
-    partOfStep5 = `\\frac{${rightStep2Inte}}{${eExpP}}`
+    rightStep2Inte = "";
+    partOfStep5 = "";
   }else {
   partOfStep5 = nerdamer(`simplify(${rightStep2Inte}/(exp(${pInte})))`).text();}
   var partCOfStep5 = nerdamer(`simplify(exp(-${pInte}))`).text();
@@ -151,14 +148,16 @@ function solve(check = false) {
   step_3.innerHTML += `\\( \\ (y.e^{${pInteLa}}) \\ = \\ \\)`;
   step_3.innerHTML += `\\( ${rightStep2La} \\)`;
 
-
   step_4.innerHTML += "Lấy tích phân 2 vế ta được: ";
-  step_4.innerHTML += `\\( y.e^{${pInteLa}} \\ = ${rightStep2 == "0" ? "" : `\\int ${rightStep2La} dx + C \\ = `} \\)`;
-  step_4.innerHTML += `\\( \\ ${rightStep2 == "0" ? "" : `${rightStep2InteLa} +`} C \\)`;
-
+  step_4.innerHTML += `\\( y.e^{${pInteLa}} \\ = \\)`;
+  step_4.innerHTML += `\\(  \\int ${rightStep2La} dx + C \\)`;
+  step_4.innerHTML += `\\( \\ ${(rightStep2Inte == "" || rightStep2 == "0") ? "" : ` \\ = ${rightStep2InteLa} + C`} \\)`;
+  if (rightStep2 == "0") step_4.innerHTML += "\\( \\ = \\ C \\)";
   step_5.innerHTML += "Vậy nghiệm tổng quát của phương trình là: ";
-  step_5.innerHTML += `\\( y \\ = \\ ${rightStep2 == "0" ? "" : `${partOfStep5La} +`}  C. \\)`;
-  step_5.innerHTML += `\\( ${partCOfStep5La} \\)`;
+  step_5.innerHTML += "\\( y \\ = \\ \\)";
+  if (partOfStep5 == "") step_5.innerHTML += `\\( \\frac{\\int ${rightStep2La} dx}{e^{${pInteLa}}} \\ + \\ \\)`
+  else step_5.innerHTML += `\\( ${partOfStep5La} \\ + \\ \\)`;
+  step_5.innerHTML += `\\( ${partCOfStep5La}.C \\)`;
 
   MathJax.typesetPromise([solutionAns]);
   if (solutionAns.innerHTML.includes("Double exponent: use braces to clarify") && !check) {
