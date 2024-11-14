@@ -106,7 +106,7 @@ function solve(check = false) {
     pText = nerdamer(`simplify(${pText}/(${yDiffText}))`).text()
     qText = nerdamer(`simplify(${qText}/(${yDiffText}))`).text()
     step_0.innerHTML +=  "Rút gọn hệ số y': ";
-    step_0.innerHTML += `\\(y' \\ + \\ ${nerdamer.convertToLaTeX(pText)} \\)`;
+    step_0.innerHTML += `\\(y' \\ + \\ (${nerdamer.convertToLaTeX(pText)}) \\)`;
     step_0.innerHTML +=  `\\( \\cdot y \\ = \\ ${nerdamer.convertToLaTeX(qText)} \\)`;
   }
   var pTextLa = nerdamer.convertToLaTeX(pText);
